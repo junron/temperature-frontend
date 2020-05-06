@@ -1,4 +1,5 @@
 # temperature-frontend
+Frontend for temperature taking app
 
 ## Project setup
 ```
