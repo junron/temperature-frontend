@@ -55,7 +55,7 @@
 
     methods: {
       signIn() {
-        location.href = `https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=${clientId}&redirect_uri=http://localhost:8080&response_type=id_token&nonce=${Math.random() * 1000}`
+        location.href = `https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=${clientId}&redirect_uri=${location.origin}&response_type=id_token&nonce=${Math.random() * 1000}`
       },
       handleLogin() {
         console.log(location.hash)
