@@ -64,7 +64,9 @@
         ))
         let code = hashParams.get("id_token")
         if (code) {
-          document.cookie = `token=${code}`
+          const expiry = new Date()
+          expiry.setTime(expiry.getTime() + 30 * 24 * 60 * 60 * 1000)
+          document.cookie = `token=${code};expires=${expiry.toUTCString()}`
           location.hash = ""
         }
         const cookies = new Map(document.cookie.split(" ").map(a =>
