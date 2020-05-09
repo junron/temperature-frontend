@@ -83,7 +83,11 @@
         {
           name: "Submissions",
           route: "/submissions"
+        }, {
+          name: "Admin",
+          route: "/admin"
         }
+
       ],
       drawerShown: false
     }),
