@@ -1,9 +1,36 @@
 <template>
     <v-app>
+        <v-navigation-drawer
+                v-model="drawerShown"
+                temporary app>
+            <v-list
+                    dense
+                    nav>
+                <router-link v-for="item in routes"
+                             :to="item.route"
+                             @click="drawerShown = false"
+                             style="text-decoration: none; color: inherit;"
+                             :key="item.name">
+                    <v-list-item link>
+                        <!--                    <v-list-item-icon>-->
+                        <!--                        <v-icon>{{ item.icon }}</v-icon>-->
+                        <!--                    </v-list-item-icon>-->
+
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                {{ item.name }}
+                            </v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-divider/>
+                </router-link>
+            </v-list>
+        </v-navigation-drawer>
         <v-app-bar
                 app
                 color="primary"
                 dark>
+            <v-app-bar-nav-icon @click="drawerShown = !drawerShown"/>
             <v-toolbar-title>
                 Temperature
             </v-toolbar-title>
@@ -28,29 +55,37 @@
 
                 </template>
             </v-container>
-            <TemperatureSubmit v-if="isSignedIn"/>
+            <router-view v-if="isSignedIn"/>
         </v-content>
     </v-app>
 </template>
 
 <script>
-  import TemperatureSubmit from "@/components/TemperatureSubmit";
 
   const clientId = "0528299e-063c-4581-8c32-d075c7570138";
 
   export default {
     name: 'App',
 
-    components: {
-      TemperatureSubmit
-    },
+    components: {},
 
     data: () => ({
       isSignedIn: false,
       user: {
         name: "",
         email: ""
-      }
+      },
+      routes: [
+        {
+          name: "Submit temperature",
+          route: "/"
+        },
+        {
+          name: "Submissions",
+          route: "/submissions"
+        }
+      ],
+      drawerShown: false
     }),
 
     methods: {
@@ -60,7 +95,7 @@
       handleLogin() {
         console.log(location.hash)
         const hashParams = new Map(location.hash.substring(1).split("&").map(a =>
-          a.split("=")
+          a.split("=").map(a => a.replace("/", ""))
         ))
         let code = hashParams.get("id_token")
         if (code) {
@@ -85,6 +120,7 @@
       }
     },
     mounted() {
+      console.log("mounted")
       this.handleLogin()
     }
   };
