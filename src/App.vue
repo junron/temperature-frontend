@@ -30,7 +30,7 @@
                 app
                 color="primary"
                 dark>
-            <v-app-bar-nav-icon @click="drawerShown = !drawerShown"/>
+            <v-app-bar-nav-icon v-show="isSignedIn" @click="drawerShown = !drawerShown"/>
             <v-toolbar-title>
                 Temperature
             </v-toolbar-title>
