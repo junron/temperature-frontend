@@ -12,11 +12,28 @@
                         hide-details
                 ></v-text-field>
             </v-card-title>
+            <v-card-subtitle>
+                <v-container fluid>
+                    <v-row>
+                        <v-select
+                                v-model="selectedMentorGroup"
+                                :items="mentorGroups"
+                                label="Mentor Group"
+                        />
+                        <v-switch
+                                class="mx-8"
+                                v-model="todayOnly"
+                                label="Today only"
+                        />
+                        <v-spacer/>
+                    </v-row>
+                </v-container>
+            </v-card-subtitle>
             <v-data-table
                     item-key="timestamp"
-                    :items="fetchedData==null ? [] : fetchedData"
+                    :items="filteredData==null ? [] : filteredData"
                     :headers="headers"
-                    :loading="fetchedData==null"
+                    :loading="filteredData==null"
                     :loading-text="fetchError ? fetchError : 'Loading...'"
                     :search="search"
             >
@@ -37,21 +54,46 @@
     data: function () {
       return {
         headers: [
-          {text: "Timestamp", value: "timestamp"},
-          {text: "Email", value: "email"},
-          {text: "Temperature", value: "temperature"}
+          {text: "Timestamp", value: "timestamp", divider: true, width: '10%'},
+          {text: "Class", value: "mentorGroup", sortable: false},
+          {text: "Name", value: "name"},
+          {text: "Temperature", value: "temperature"},
         ],
+        mentorGroups: ["All", ...Array.from(Array(8).keys()).splice(1)
+          .map(a => {
+            return `M2040${a}`
+          })],
+        selectedMentorGroup: "All",
         fetchError: false,
         fetchedData: null,
+        todayOnly: false,
         search: ""
       };
+    },
+    computed: {
+      filteredData: function () {
+        let filtered = this.fetchedData
+        if (filtered == null) return null
+        const today = new Date().toDateString()
+        filtered = filtered.filter(a => {
+          if (this.todayOnly) {
+            const date = new Date(a.timestamp)
+            if (date.toDateString() !== today) return false
+          }
+          if (this.selectedMentorGroup !== "All") {
+            if (a.mentorGroup !== this.selectedMentorGroup) return false
+          }
+          return true
+        })
+        return filtered
+      }
     },
     created() {
       this.fetchData("")
     },
     methods: {
-      async fetchData(queryParams) {
-        return fetch(`https://temperature.chatbox2.ml/api/temperatures/all?${queryParams}`, {
+      async fetchData() {
+        return fetch(`https://temperature.chatbox2.ml/api/temperatures/all`, {
           credentials: "include"
         })
           .then(a => a.text())
@@ -61,7 +103,9 @@
                 return {
                   temperature: item.temperature.temperature,
                   timestamp: item.timestamp,
-                  email: item.email
+                  email: item.email,
+                  name: item.name,
+                  mentorGroup: item.mentorGroup
                 }
               })
               this.fetchError = false
@@ -100,3 +144,8 @@
 
   }
 </script>
+<style>
+    .v-select__selections input {
+        display: none
+    }
+</style>
