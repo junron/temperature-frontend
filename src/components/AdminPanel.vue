@@ -14,18 +14,23 @@
             </v-card-title>
             <v-card-subtitle>
                 <v-container fluid>
+                    <v-select
+                            v-model="selectedMentorGroup"
+                            :items="mentorGroups"
+                            label="Mentor Group"
+                    />
                     <v-row>
-                        <v-select
-                                v-model="selectedMentorGroup"
-                                :items="mentorGroups"
-                                label="Mentor Group"
-                        />
                         <v-switch
-                                class="mx-8"
+                                class="mx-4"
                                 v-model="todayOnly"
                                 label="Today only"
                         />
-                        <v-spacer/>
+                        <v-switch
+                                class="mx-4"
+                                v-show="todayOnly && selectedMentorGroup !== 'All'"
+                                v-model="showNoSubmit"
+                                label="Show all students"
+                        />
                     </v-row>
                 </v-container>
             </v-card-subtitle>
@@ -38,10 +43,13 @@
                     :search="search"
             >
                 <template v-slot:item.temperature="{ item }">
-                    <v-chip :color="getTemperatureColor(item.temperature)" dark>{{ item.temperature }}</v-chip>
+                    <v-chip :color="getTemperatureColor(item.temperature)" dark>{{
+                        item.temperature == null ? "Not submitted" : item.temperature
+                        }}
+                    </v-chip>
                 </template>
                 <template v-slot:item.timestamp="{ item }">
-                    {{ formatDate(new Date(item.timestamp)) }}
+                    {{ item.timestamp == null ? "-" : formatDate(new Date(item.timestamp)) }}
                 </template>
             </v-data-table>
         </v-card>
@@ -67,6 +75,7 @@
         fetchError: false,
         fetchedData: null,
         todayOnly: true,
+        showNoSubmit: false,
         todayData: null,
         todayError: false,
         search: ""
@@ -87,7 +96,33 @@
           }
           return true
         })
+        if (this.showNoSubmit) {
+          const ids = filtered.map(a => a.email)
+          this.classlist.forEach(a => {
+            if (!ids.includes(a.id)) {
+              filtered = [...filtered, {
+                temperature: null,
+                timestamp: null,
+                email: a.id,
+                name: a.name,
+                mentorGroup: a.mentorGroup
+              }]
+            }
+          })
+        }
         return filtered
+      }
+    },
+    asyncComputed: {
+      classlist: {
+        lazy: true,
+        default: [],
+        get() {
+          if (this.selectedMentorGroup === "All") return []
+          return fetch(`https://temperature.chatbox2.ml/api/classes/${this.selectedMentorGroup}`, {
+            credentials: "include"
+          }).then(a => a.json())
+        }
       }
     },
     created() {
@@ -110,6 +145,8 @@
                   name: item.name,
                   mentorGroup: item.mentorGroup
                 }
+              }).sort((a, b) => {
+                return new Date(b.timestamp) - new Date(a.timestamp)
               })
               this.fetchError = false
             } catch (e) {
@@ -124,6 +161,7 @@
       },
 
       getTemperatureColor(temperature) {
+        if (temperature == null) return 'orange'
         if (temperature >= 37.4)
           return 'red'
         else if (temperature < 35)
