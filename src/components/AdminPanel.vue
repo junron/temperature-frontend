@@ -66,17 +66,19 @@
         selectedMentorGroup: "All",
         fetchError: false,
         fetchedData: null,
-        todayOnly: false,
+        todayOnly: true,
+        todayData: null,
+        todayError: false,
         search: ""
       };
     },
     computed: {
       filteredData: function () {
-        let filtered = this.fetchedData
+        let filtered = this.todayOnly ? (this.todayData != null ? this.todayData : this.fetchedData) : this.fetchedData
         if (filtered == null) return null
         const today = new Date().toDateString()
         filtered = filtered.filter(a => {
-          if (this.todayOnly) {
+          if (this.todayOnly && this.todayData == null) {
             const date = new Date(a.timestamp)
             if (date.toDateString() !== today) return false
           }
@@ -89,7 +91,8 @@
       }
     },
     created() {
-      this.fetchData("")
+      this.fetchData()
+      this.listenToday()
     },
     methods: {
       async fetchData() {
@@ -139,6 +142,26 @@
         })
         const [{value: mo}, , {value: da}, , {value: hour}, , {value: minute}, , , , {value: dayPeriod}] = dtf.formatToParts(date)
         return `${da} ${mo} ${hour}:${minute} ${dayPeriod}`
+      },
+      listenToday() {
+        const websocket = new WebSocket("wss://temperature.chatbox2.ml/api/temperatures/today/watch")
+        websocket.onmessage = data => {
+          try {
+            this.todayData = JSON.parse(data.data).map(item => {
+              return {
+                temperature: item.temperature.temperature,
+                timestamp: item.timestamp,
+                email: item.email,
+                name: item.name,
+                mentorGroup: item.mentorGroup
+              }
+            })
+            this.todayError = false
+          } catch (e) {
+            this.todayData = null
+            this.todayError = e.toString()
+          }
+        }
       }
     }
 
