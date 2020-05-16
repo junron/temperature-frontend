@@ -15,12 +15,21 @@
             >
                 <template v-slot:item.temperature="{ item }">
                     <v-chip :color="getTemperatureColor(item.temperature)" dark>{{ item.temperature }}</v-chip>
-                    <v-chip v-if="isLate(new Date(item.timestamp))" style="margin-left:5px" :color="darkgrey" dark>LATE!</v-chip>
+                    <v-chip v-if="isLate(new Date(item.timestamp))" style="margin-left:5px" :color="darkgrey" dark>
+                        LATE!
+                    </v-chip>
                 </template>
                 <template v-slot:item.timestamp="{ item }">
                     {{ formatDate(new Date(item.timestamp)) }}
                 </template>
             </v-data-table>
+            <v-calendar
+                    ref="calendar"
+                    v-model="focus"
+                    type="month"
+                    :events="eventsData">
+
+            </v-calendar>
         </v-card>
     </v-container>
 </template>
@@ -38,7 +47,8 @@
                 fetchError: false,
                 fetchedData: null,
                 todayOnly: false,
-                search: ""
+                search: "",
+                events: []
             };
         },
         computed: {
@@ -48,6 +58,11 @@
                 if (filtered == null) return null
                 console.log(filtered)
                 return filtered
+            },
+            eventsData: function () {
+                console.log(this.events)
+
+                return this.events
             }
         },
         created() {
@@ -68,6 +83,12 @@
                                     email: item.email,
                                     name: item.name,
                                     mentorGroup: item.mentorGroup
+                                }
+                            })
+                            this.events = JSON.parse(text).map(item => {
+                                return {
+                                    name: item.temperature.temperature,
+                                    start: new Date(item.timestamp)
                                 }
                             })
                             this.fetchError = false
@@ -100,7 +121,7 @@
                 })
                 // eslint-disable-next-line no-unused-vars
                 const [{value: mo}, , {value: da}, , {value: hour}, , {value: minute}, , , , {value: dayPeriod}] = dtf.formatToParts(timestamp)
-                if (dayPeriod == 'AM' && hour < 9 && hour >=6)
+                if (dayPeriod == 'AM' && hour < 9 && hour >= 6)
                     return false
                 return true
             },
