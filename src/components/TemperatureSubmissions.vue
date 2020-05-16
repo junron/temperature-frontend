@@ -4,11 +4,28 @@
             <v-card-title>
                 Your Temperature Submissions
             </v-card-title>
+            <v-btn
+                    icon
+                    class="ma-2"
+                    @click="prev"
+            >
+                <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+            {{ calendarTitle }}
+            <v-btn
+                    icon
+                    class="ma-2"
+                    @click="next"
+            >
+                <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
             <v-calendar
+                    v-model="calendarValue"
                     ref="calendar"
                     type="month"
-                    :events="eventsData">
-            </v-calendar>
+                    :events="eventsData"
+                    @change="updateRange"
+            />
         </v-card>
     </v-container>
 </template>
@@ -21,13 +38,12 @@
       return {
         fetchError: false,
         fetchedData: null,
-        todayOnly: false,
-        search: "",
+        calendarValue: '',
+        start: null
       };
     },
     computed: {
       eventsData: function () {
-        console.log(this.fetchedData)
         if (this.fetchedData == null) return []
         return this.fetchedData.map(a => {
           return {
@@ -35,6 +51,16 @@
             start: this.formatDate(new Date(a.timestamp))
           }
         })
+      },
+      calendarTitle: function () {
+        const dtf = new Intl.DateTimeFormat('en', {
+          month: 'short',
+          year: 'numeric'
+        })
+        console.log(this.start)
+        if (this.start)
+          return dtf.format(new Date(this.start.date))
+        else return ""
       }
     },
     created() {
@@ -95,12 +121,20 @@
           day: '2-digit',
           year: 'numeric',
           hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric',
-          hour12: false,
+          minute: 'numeric'
         })
         const [{value: mo}, , {value: da}, , {value: year}, , {value: hour}, , {value: minute}] = dtf.formatToParts(date)
         return `${year}-${mo}-${da} ${hour}:${minute}`
+      },
+      prev() {
+        console.log("hmm")
+        this.$refs.calendar.prev()
+      },
+      next() {
+        this.$refs.calendar.next()
+      },
+      updateRange({start}) {
+        this.start = start
       }
     }
   }
