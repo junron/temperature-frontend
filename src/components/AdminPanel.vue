@@ -14,12 +14,16 @@
             </v-card-title>
             <v-card-subtitle>
                 <v-container fluid>
-                    <v-select
-                            v-model="selectedMentorGroup"
-                            :items="mentorGroups"
-                            label="Mentor Group"
-                    />
+
                     <v-row>
+                        <v-col cols="6">
+                            <v-select
+                                    dense
+                                    v-model="selectedMentorGroup"
+                                    :items="mentorGroups"
+                                    label="Mentor Group"
+                            />
+                        </v-col>
                         <v-switch
                                 class="mx-4"
                                 v-model="todayOnly"
@@ -31,6 +35,17 @@
                                 v-model="showNoSubmit"
                                 label="Show all students"
                         />
+
+                        <v-spacer/>
+                        <v-btn
+                                :disabled="filteredData==null || filteredData.length===0"
+                                color="primary"
+                                class="my-2"
+                                @click="downloadCSV"
+                        >
+                            <v-icon left>mdi-download</v-icon>
+                            Download
+                        </v-btn>
                     </v-row>
                 </v-container>
             </v-card-subtitle>
@@ -43,9 +58,8 @@
                     :search="search"
             >
                 <template v-slot:item.temperature="{ item }">
-                    <v-chip :color="getTemperatureColor(item.temperature)" dark>{{
-                        item.temperature == null ? "Not submitted" : item.temperature
-                        }}
+                    <v-chip :color="getTemperatureColor(item.temperature)" dark>
+                        {{ item.temperature == null ? "Not submitted" : item.temperature }}
                     </v-chip>
                 </template>
                 <template v-slot:item.timestamp="{ item }">
@@ -175,10 +189,9 @@
           day: '2-digit',
           hour: 'numeric',
           minute: 'numeric',
-          second: 'numeric',
           hour12: true,
         })
-        const [{value: mo}, , {value: da}, , {value: hour}, , {value: minute}, , , , {value: dayPeriod}] = dtf.formatToParts(date)
+        const [{value: mo}, , {value: da}, , {value: hour}, , {value: minute}, , {value: dayPeriod}] = dtf.formatToParts(date)
         return `${da} ${mo} ${hour}:${minute} ${dayPeriod}`
       },
       listenToday() {
@@ -200,6 +213,23 @@
             this.todayError = e.toString()
           }
         }
+      },
+      downloadCSV() {
+        let output = "data:text/csv;charset=utf-8,Timestamp,Class,Name,Temperature\n"
+        for (const item of this.filteredData) {
+          const timestamp = item.timestamp == null ? "-" : this.formatDate(new Date(item.timestamp))
+          const temperature = item.temperature == null ? "Not submitted" : item.temperature
+          output += `${timestamp},${item.mentorGroup},${item.name},${temperature}\n`
+        }
+        const fileName = (this.selectedMentorGroup === "All" ? "Year 4" : this.selectedMentorGroup) + "-" +
+          (this.todayOnly ? new Date().toDateString() : "All") + ".csv"
+        const encodedUri = encodeURI(output);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link); // Required for FF
+
+        link.click();
       }
     }
 
