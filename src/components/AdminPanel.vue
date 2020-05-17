@@ -219,7 +219,7 @@
         for (const item of this.filteredData) {
           const timestamp = item.timestamp == null ? "-" : this.formatDate(new Date(item.timestamp))
           const temperature = item.temperature == null ? "Not submitted" : item.temperature
-          output += `${timestamp},${item.mentorGroup},${item.name},${temperature}\n`
+          output += `${timestamp},${item.mentorGroup},"${item.name}",${temperature}\n`
         }
         const fileName = (this.selectedMentorGroup === "All" ? "Year 4" : this.selectedMentorGroup) + "-" +
           (this.todayOnly ? new Date().toDateString() : "All") + ".csv"
