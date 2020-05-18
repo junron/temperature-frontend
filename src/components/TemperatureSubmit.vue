@@ -1,18 +1,27 @@
 <template>
     <v-container fluid>
-        <div>
-            Is this your temperature? {{ temperature }}
+        <div class="mb-3" align="center" >
+            My temperature:
         </div>
-        <v-spacer></v-spacer>
-        <v-form>
-            <v-btn v-on:click="submitTemperature" class="success mr-4">
-                Yes
-            </v-btn>
-            <v-btn v-on:click="newRandomTemp" class="error mr-4">
-                No
+        <div>
+            <v-text-field
+                    v-model="numberValue"
+                    hide-details
+                    single-line
+                    type="number"
+                    filled = true
+                    persistent-hint = true
+                    placeholder="Enter in Celsius..."
+
+            />
+        </div>
+        <v-form align="center">
+            <v-btn v-on:click="submitTemperature" class="success my-5 elevation-3">
+                Submit
             </v-btn>
         </v-form>
-        <div>
+        <v-divider></v-divider>
+        <div class="my-5" align="center">
             Status: {{ status }}
         </div>
     </v-container>
@@ -20,19 +29,15 @@
 
 <script>
 
-  const getRandomTemperature = () => 30 + Math.floor(Math.random() * 10) + Math.floor(Math.random() * 10) / 10
-  export default {
+    export default {
+      components: {  },
     name: 'TemperatureSubmit',
     data() {
       return {
-        temperature: getRandomTemperature(),
         status: "Not submitted"
       }
     },
     methods: {
-      newRandomTemp() {
-        this.temperature = getRandomTemperature()
-      },
       submitTemperature() {
         fetch("https://temperature.chatbox2.ml/api/add", {
           method: "POST",
@@ -54,3 +59,5 @@
     }
   }
 </script>
+
+

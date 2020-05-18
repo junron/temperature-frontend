@@ -1,3 +1,4 @@
+
 <template>
     <v-app>
         <v-navigation-drawer
@@ -62,7 +63,7 @@
 
 <script>
 
-  const clientId = "0528299e-063c-4581-8c32-d075c7570138";
+    const clientId = "0528299e-063c-4581-8c32-d075c7570138";
 
   export default {
     name: 'App',
