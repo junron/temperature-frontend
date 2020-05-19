@@ -1,22 +1,21 @@
 <template>
     <v-container fluid>
-        <div class="mb-3" align="center" >
-            My temperature:
+        <div class="mb-3" align="center" style="font-size: 30px">
+            Submit temperature
         </div>
         <div>
             <v-text-field
-                    v-model="numberValue"
-                    hide-details
+                    v-model="temperature"
                     single-line
                     type="number"
                     filled = true
+                    hint="Enter in ºC"
                     persistent-hint = true
-                    placeholder="Enter in Celsius..."
-
+                    placeholder="Enter in ºC..."
             />
         </div>
         <v-form align="center">
-            <v-btn v-on:click="submitTemperature" class="success my-5 elevation-3">
+            <v-btn class="success my-5 elevation-3" @click = "dialog = true">
                 Submit
             </v-btn>
         </v-form>
@@ -24,6 +23,17 @@
         <div class="my-5" align="center">
             Status: {{ status }}
         </div>
+        <v-dialog v-model = "dialog" max-width="300">
+            <v-card>
+                <v-card-title>Confirm Submission</v-card-title>
+                <v-card-text>You cannot undo this action. Continue?</v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue" text @click="dialog = false">Close</v-btn>
+                    <v-btn color="blue" text @click="dialog = false" v-on:click="submitTemperature">Confirm</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -34,7 +44,9 @@
     name: 'TemperatureSubmit',
     data() {
       return {
-        status: "Not submitted"
+          temperature: 36.9,
+        status: "Not submitted",
+          dialog: false
       }
     },
     methods: {
@@ -59,5 +71,6 @@
     }
   }
 </script>
+
 
 
