@@ -5,15 +5,14 @@
                 <v-card-title>Submit temperature</v-card-title>
                 <v-form class="mx-4">
                     <v-text-field
+                            :rules="rules"
                             v-model="temperature"
-                            single-line
                             type="number"
-                            filled=true
-                            hint="Enter in ºC"
-                            persistent-hint=true
-                            placeholder="Enter in ºC..."
+                            placeholder="Enter temperature"
+                            filled
+                            suffix="ºC"
                     />
-                    <v-btn class="success my-5 elevation-3" @click="dialog = true">
+                    <v-btn class="success my-5 elevation-3" @click="submitTemperature">
                         Submit
                     </v-btn>
                     <v-divider></v-divider>
@@ -23,17 +22,6 @@
                 </v-form>
             </v-card>
         </v-row>
-        <v-dialog v-model="dialog" max-width="300">
-            <v-card>
-                <v-card-title>Confirm Submission</v-card-title>
-                <v-card-text>You cannot undo this action. Continue?</v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue" text @click="dialog = false">Close</v-btn>
-                    <v-btn color="blue" text @click="dialog = false" v-on:click="submitTemperature">Confirm</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
     </v-container>
 </template>
 
@@ -46,11 +34,19 @@
       return {
         temperature: null,
         status: "Not submitted",
-        dialog: false
+        dialog: false,
+        rules: [
+          value => !!value || 'Required.',
+          value => {
+            const val = parseFloat(value)
+            return (val > 35 && val < 42) || "Temperature must be between 35 and 42ºC"
+          }
+        ]
       }
     },
     methods: {
       submitTemperature() {
+        this.status = "Submitting..."
         fetch("https://temperature.chatbox2.ml/api/add", {
           method: "POST",
           credentials: "include",
