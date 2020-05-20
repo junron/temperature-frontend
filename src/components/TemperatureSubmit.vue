@@ -1,29 +1,29 @@
 <template>
     <v-container fluid>
-        <div class="mb-3" align="center" style="font-size: 30px">
-            Submit temperature
-        </div>
-        <div>
-            <v-text-field
-                    v-model="temperature"
-                    single-line
-                    type="number"
-                    filled = true
-                    hint="Enter in ºC"
-                    persistent-hint = true
-                    placeholder="Enter in ºC..."
-            />
-        </div>
-        <v-form align="center">
-            <v-btn class="success my-5 elevation-3" @click = "dialog = true">
-                Submit
-            </v-btn>
-        </v-form>
-        <v-divider></v-divider>
-        <div class="my-5" align="center">
-            Status: {{ status }}
-        </div>
-        <v-dialog v-model = "dialog" max-width="300">
+        <v-row class="justify-center">
+            <v-card class="mx-4" elevation="10" min-width="70%">
+                <v-card-title>Submit temperature</v-card-title>
+                <v-form class="mx-4">
+                    <v-text-field
+                            v-model="temperature"
+                            single-line
+                            type="number"
+                            filled=true
+                            hint="Enter in ºC"
+                            persistent-hint=true
+                            placeholder="Enter in ºC..."
+                    />
+                    <v-btn class="success my-5 elevation-3" @click="dialog = true">
+                        Submit
+                    </v-btn>
+                    <v-divider></v-divider>
+                    <div class="my-5">
+                        Status: {{ status }}
+                    </div>
+                </v-form>
+            </v-card>
+        </v-row>
+        <v-dialog v-model="dialog" max-width="300">
             <v-card>
                 <v-card-title>Confirm Submission</v-card-title>
                 <v-card-text>You cannot undo this action. Continue?</v-card-text>
@@ -39,14 +39,14 @@
 
 <script>
 
-    export default {
-      components: {  },
+  export default {
+    components: {},
     name: 'TemperatureSubmit',
     data() {
       return {
-          temperature: 36.9,
+        temperature: null,
         status: "Not submitted",
-          dialog: false
+        dialog: false
       }
     },
     methods: {
