@@ -96,7 +96,8 @@
           icon: "mdi-history"
         }, {
           name: "Admin",
-          route: "/admin"
+          route: "/admin",
+          icon: "mdi-chart-donut"
         }
 
       ],

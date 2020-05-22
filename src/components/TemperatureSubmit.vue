@@ -3,7 +3,9 @@
         <v-row class="justify-center">
             <v-card class="mx-4" elevation="10" min-width="70%">
                 <v-card-title>Submit temperature</v-card-title>
-                <v-form class="mx-4">
+                <v-form
+                        v-model="valid"
+                        class="mx-4">
                     <v-text-field
                             :rules="rules"
                             v-model="temperature"
@@ -11,8 +13,9 @@
                             placeholder="Enter temperature"
                             filled
                             suffix="ºC"
+                            required
                     />
-                    <v-btn class="success my-5 elevation-3" @click="submitTemperature">
+                    <v-btn :disabled="!valid" class="success my-5 elevation-3" @click="submitTemperature">
                         Submit
                     </v-btn>
                     <v-divider></v-divider>
@@ -32,11 +35,11 @@
     name: 'TemperatureSubmit',
     data() {
       return {
+        valid: false,
         temperature: null,
         status: "Not submitted",
         dialog: false,
         rules: [
-          value => !!value || 'Required.',
           value => {
             const val = parseFloat(value)
             return (val > 35 && val < 42) || "Temperature must be between 35 and 42ºC"

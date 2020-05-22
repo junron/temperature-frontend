@@ -57,7 +57,6 @@
           month: 'short',
           year: 'numeric'
         })
-        console.log(this.start)
         if (this.start)
           return dtf.format(new Date(this.start.date))
         else return ""
@@ -121,13 +120,13 @@
           day: '2-digit',
           year: 'numeric',
           hour: 'numeric',
-          minute: 'numeric'
+          minute: 'numeric',
+          hour12: false
         })
         const [{value: mo}, , {value: da}, , {value: year}, , {value: hour}, , {value: minute}] = dtf.formatToParts(date)
         return `${year}-${mo}-${da} ${hour}:${minute}`
       },
       prev() {
-        console.log("hmm")
         this.$refs.calendar.prev()
       },
       next() {
