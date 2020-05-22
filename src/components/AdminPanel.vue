@@ -110,7 +110,7 @@
           }
           return true
         })
-        if (this.showNoSubmit) {
+        if (this.selectedMentorGroup !== "All" && this.todayOnly && this.showNoSubmit) {
           const ids = filtered.map(a => a.email)
           this.classlist.forEach(a => {
             if (!ids.includes(a.id)) {
