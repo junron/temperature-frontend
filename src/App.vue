@@ -1,4 +1,3 @@
-
 <template>
     <v-app>
         <v-navigation-drawer
@@ -71,7 +70,7 @@
 
 <script>
 
-    const clientId = "0528299e-063c-4581-8c32-d075c7570138";
+  const clientId = "0528299e-063c-4581-8c32-d075c7570138";
 
   export default {
     name: 'App',
@@ -94,7 +93,8 @@
           name: "Submissions",
           route: "/submissions",
           icon: "mdi-history"
-        }, {
+        },
+        {
           name: "Admin",
           route: "/admin",
           icon: "mdi-chart-donut"
@@ -113,12 +113,6 @@
           a.split("=").map(a => a.replace("/", ""))
         ))
         let code = hashParams.get("id_token")
-        if (code) {
-          const expiry = new Date()
-          expiry.setTime(expiry.getTime() + 30 * 24 * 60 * 60 * 1000)
-          document.cookie = `token=${code};expires=${expiry.toUTCString()}`
-          location.hash = ""
-        }
         const cookies = new Map(document.cookie.split(" ").map(a =>
           a.split("=")
         ))
@@ -132,6 +126,12 @@
           email: claims.unique_name
         }
         this.isSignedIn = true
+        if (code) {
+          const expiry = new Date()
+          expiry.setTime(expiry.getTime() + 30 * 24 * 60 * 60 * 1000)
+          document.cookie = `token=${code};expires=${expiry.toUTCString()}`
+          this.$router.push("/")
+        }
       }
     },
     mounted() {
