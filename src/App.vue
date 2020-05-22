@@ -43,7 +43,7 @@
                 app
                 color="primary"
                 dark>
-            <v-app-bar-nav-icon @click="drawerShown = !drawerShown"/>
+            <v-app-bar-nav-icon v-show="isSignedIn" @click="drawerShown = !drawerShown"/>
             <v-toolbar-title>
                 Temperature
             </v-toolbar-title>
@@ -93,7 +93,11 @@
           name: "Submissions",
           route: "/submissions",
           icon: "mdi-history"
+        }, {
+          name: "Admin",
+          route: "/admin"
         }
+
       ],
       drawerShown: false
     }),
@@ -103,7 +107,6 @@
         location.href = `https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=${clientId}&redirect_uri=${location.origin}&response_type=id_token&nonce=${Math.random() * 1000}`
       },
       handleLogin() {
-        console.log(location.hash)
         const hashParams = new Map(location.hash.substring(1).split("&").map(a =>
           a.split("=").map(a => a.replace("/", ""))
         ))
@@ -130,7 +133,6 @@
       }
     },
     mounted() {
-      console.log("mounted")
       this.handleLogin()
     }
   };
