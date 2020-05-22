@@ -3,6 +3,19 @@
         <v-navigation-drawer
                 v-model="drawerShown"
                 temporary app>
+            <v-list-item>
+                <v-list-item-content>
+                    <v-icon size="100">mdi-account</v-icon>
+                    <v-list-item-title>
+                        Welcome, {{ user.name }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                        {{ user.email.startsWith("h1") ? "Student" : "Teacher" }}
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-divider></v-divider>
             <v-list
                     dense
                     nav>
@@ -12,9 +25,9 @@
                              style="text-decoration: none; color: inherit;"
                              :key="item.name">
                     <v-list-item link>
-                        <!--                    <v-list-item-icon>-->
-                        <!--                        <v-icon>{{ item.icon }}</v-icon>-->
-                        <!--                    </v-list-item-icon>-->
+                        <v-list-item-icon>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
 
                         <v-list-item-content>
                             <v-list-item-title>
@@ -38,12 +51,7 @@
 
         <v-content>
             <v-container fluid>
-                <div v-if="isSignedIn">
-                    <v-row>
-                        Welcome, {{ user.name }}
-                    </v-row>
-                </div>
-                <template v-else>
+                <template v-if="!isSignedIn">
                     <v-row>
                         <div class="mx-4">
                             You're not signed in.
@@ -78,11 +86,13 @@
       routes: [
         {
           name: "Submit temperature",
-          route: "/"
+          route: "/",
+          icon: "mdi-thermometer"
         },
         {
           name: "Submissions",
-          route: "/submissions"
+          route: "/submissions",
+          icon: "mdi-history"
         }
       ],
       drawerShown: false
