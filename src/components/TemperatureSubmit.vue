@@ -30,6 +30,8 @@
 
 <script>
 
+  import dateutils from "@/utils/dateutils";
+
   export default {
     components: {},
     name: 'TemperatureSubmit',
@@ -61,7 +63,7 @@
             try {
               const data = JSON.parse(a)
               console.log(data)
-              this.status = "Submitted"
+              this.status = `Submitted ${dateutils.displayDate(new Date(data.temperatureResponse.timestamp))}`
             } catch (e) {
               this.status = "Errored: " + a
             }

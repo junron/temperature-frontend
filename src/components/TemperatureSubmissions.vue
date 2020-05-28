@@ -35,6 +35,7 @@
 </template>
 
 <script>
+  import dateutils from "@/utils/dateutils";
 
     export default {
         name: 'TemperatureSubmissions',
@@ -66,8 +67,8 @@
                 if (this.fetchedData == null) return []
                 return this.fetchedData.map(a => {
                     return {
-                        name: a.temperature.toString(),
-                        start: this.formatDate(new Date(a.timestamp)),
+                      name: a.temperature.toString(),
+                      start: dateutils.formatDate(new Date(a.timestamp)),
                     }
                 })
             },
@@ -143,18 +144,6 @@
                     else
                         return '#026428'
                 }
-            },
-            formatDate(date) {
-                const dtf = new Intl.DateTimeFormat('en', {
-                    month: 'numeric',
-                    day: '2-digit',
-                    year: 'numeric',
-                    hour: 'numeric',
-                    minute: 'numeric',
-                    hour12: false
-                })
-                const [{value: mo}, , {value: da}, , {value: year}, , {value: hour}, , {value: minute}] = dtf.formatToParts(date)
-                return `${year}-${mo}-${da} ${hour}:${minute}`
             },
             prev() {
                 this.$refs.calendar.prev()

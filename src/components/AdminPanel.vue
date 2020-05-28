@@ -63,7 +63,7 @@
                     </v-chip>
                 </template>
                 <template v-slot:item.timestamp="{ item }">
-                    {{ item.timestamp == null ? "-" : formatDate(new Date(item.timestamp)) }}
+                    {{ item.timestamp == null ? "-" : dateutils.displayDate(new Date(item.timestamp)) }}
                 </template>
             </v-data-table>
         </v-card>
@@ -71,10 +71,13 @@
 </template>
 
 <script>
+  import dateutils from "@/utils/dateutils";
+
   export default {
     name: 'AdminPanel',
     data: function () {
       return {
+        dateutils,
         headers: [
           {text: "Timestamp", value: "timestamp", divider: true, width: '10%'},
           {text: "Class", value: "mentorGroup", sortable: false},
@@ -183,17 +186,6 @@
         else
           return 'green'
       },
-      formatDate(date) {
-        const dtf = new Intl.DateTimeFormat('en', {
-          month: 'short',
-          day: '2-digit',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true,
-        })
-        const [{value: mo}, , {value: da}, , {value: hour}, , {value: minute}, , {value: dayPeriod}] = dtf.formatToParts(date)
-        return `${da} ${mo} ${hour}:${minute} ${dayPeriod}`
-      },
       listenToday() {
         const websocket = new WebSocket("wss://temperature.chatbox2.ml/api/temperatures/today/watch")
         websocket.onmessage = data => {
@@ -217,7 +209,7 @@
       downloadCSV() {
         let output = "data:text/csv;charset=utf-8,Timestamp,Class,Name,Temperature\n"
         for (const item of this.filteredData) {
-          const timestamp = item.timestamp == null ? "-" : this.formatDate(new Date(item.timestamp))
+          const timestamp = item.timestamp == null ? "-" : dateutils.displayDate(new Date(item.timestamp))
           const temperature = item.temperature == null ? "Not submitted" : item.temperature
           output += `${timestamp},${item.mentorGroup},"${item.name}",${temperature}\n`
         }
