@@ -10,8 +10,8 @@
   "dependencies": {
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
-    "vue-number-picker": "0.0.1",
     "vue-async-computed": "^3.8.2",
+    "vue-number-picker": "0.0.1",
     "vue-router": "^3.1.6",
     "vuetify": "^2.2.11"
   },
