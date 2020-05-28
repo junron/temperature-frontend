@@ -3,6 +3,19 @@
         <v-navigation-drawer
                 v-model="drawerShown"
                 temporary app>
+            <v-list-item>
+                <v-list-item-content>
+                    <v-icon size="100">mdi-account</v-icon>
+                    <v-list-item-title>
+                        Welcome, {{ user.name }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                        {{ user.email.endsWith("@nushigh.edu.sg") ? "Student" : "Teacher" }}
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-divider></v-divider>
             <v-list
                     dense
                     nav>
@@ -12,9 +25,9 @@
                              style="text-decoration: none; color: inherit;"
                              :key="item.name">
                     <v-list-item link>
-                        <!--                    <v-list-item-icon>-->
-                        <!--                        <v-icon>{{ item.icon }}</v-icon>-->
-                        <!--                    </v-list-item-icon>-->
+                        <v-list-item-icon>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
 
                         <v-list-item-content>
                             <v-list-item-title>
@@ -30,7 +43,7 @@
                 app
                 color="primary"
                 dark>
-            <v-app-bar-nav-icon @click="drawerShown = !drawerShown"/>
+            <v-app-bar-nav-icon v-show="isSignedIn" @click="drawerShown = !drawerShown"/>
             <v-toolbar-title>
                 Temperature
             </v-toolbar-title>
@@ -38,12 +51,7 @@
 
         <v-content>
             <v-container fluid>
-                <div v-if="isSignedIn">
-                    <v-row>
-                        Welcome, {{ user.name }}
-                    </v-row>
-                </div>
-                <template v-else>
+                <template v-if="!isSignedIn">
                     <v-row>
                         <div class="mx-4">
                             You're not signed in.
@@ -75,35 +83,38 @@
         name: "",
         email: ""
       },
-      routes: [
-        {
-          name: "Submit temperature",
-          route: "/"
-        },
-        {
-          name: "Submissions",
-          route: "/submissions"
-        }
-      ],
       drawerShown: false
     }),
-
+    computed: {
+      routes: function () {
+        return [
+          {
+            name: "Submit temperature",
+            route: "/",
+            icon: "mdi-thermometer"
+          },
+          {
+            name: "Submissions",
+            route: "/submissions",
+            icon: "mdi-history"
+          },
+          (location.search.includes("debug") || this.user.email.endsWith("@nus.edu.sg")) && {
+            name: "Admin",
+            route: "/admin",
+            icon: "mdi-chart-donut"
+          }
+        ].filter(a => !!a)
+      }
+    },
     methods: {
       signIn() {
         location.href = `https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=${clientId}&redirect_uri=${location.origin}&response_type=id_token&nonce=${Math.random() * 1000}`
       },
       handleLogin() {
-        console.log(location.hash)
         const hashParams = new Map(location.hash.substring(1).split("&").map(a =>
           a.split("=").map(a => a.replace("/", ""))
         ))
         let code = hashParams.get("id_token")
-        if (code) {
-          const expiry = new Date()
-          expiry.setTime(expiry.getTime() + 30 * 24 * 60 * 60 * 1000)
-          document.cookie = `token=${code};expires=${expiry.toUTCString()}`
-          location.hash = ""
-        }
         const cookies = new Map(document.cookie.split(" ").map(a =>
           a.split("=")
         ))
@@ -117,10 +128,15 @@
           email: claims.unique_name
         }
         this.isSignedIn = true
+        if (code) {
+          const expiry = new Date()
+          expiry.setTime(expiry.getTime() + 30 * 24 * 60 * 60 * 1000)
+          document.cookie = `token=${code};expires=${expiry.toUTCString()}`
+          this.$router.push("/")
+        }
       }
     },
     mounted() {
-      console.log("mounted")
       this.handleLogin()
     }
   };

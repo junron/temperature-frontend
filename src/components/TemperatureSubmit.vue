@@ -1,39 +1,57 @@
 <template>
     <v-container fluid>
-        <div>
-            Is this your temperature? {{ temperature }}
-        </div>
-        <v-spacer></v-spacer>
-        <v-form>
-            <v-btn v-on:click="submitTemperature" class="success mr-4">
-                Yes
-            </v-btn>
-            <v-btn v-on:click="newRandomTemp" class="error mr-4">
-                No
-            </v-btn>
-        </v-form>
-        <div>
-            Status: {{ status }}
-        </div>
+        <v-row class="justify-center">
+            <v-card class="mx-4" elevation="10" min-width="70%">
+                <v-card-title>Submit temperature</v-card-title>
+                <v-form
+                        v-model="valid"
+                        class="mx-4">
+                    <v-text-field
+                            :rules="rules"
+                            v-model="temperature"
+                            type="number"
+                            placeholder="Enter temperature"
+                            filled
+                            suffix="ºC"
+                            required
+                    />
+                    <v-btn :disabled="!valid" class="success my-5 elevation-3" @click="submitTemperature">
+                        Submit
+                    </v-btn>
+                    <v-divider></v-divider>
+                    <div class="my-5">
+                        Status: {{ status }}
+                    </div>
+                </v-form>
+            </v-card>
+        </v-row>
     </v-container>
 </template>
 
 <script>
 
-  const getRandomTemperature = () => 30 + Math.floor(Math.random() * 10) + Math.floor(Math.random() * 10) / 10
+  import dateutils from "@/utils/dateutils";
+
   export default {
+    components: {},
     name: 'TemperatureSubmit',
     data() {
       return {
-        temperature: getRandomTemperature(),
-        status: "Not submitted"
+        valid: false,
+        temperature: null,
+        status: "Not submitted",
+        dialog: false,
+        rules: [
+          value => {
+            const val = parseFloat(value)
+            return (val > 35 && val < 42) || "Temperature must be between 35 and 42ºC"
+          }
+        ]
       }
     },
     methods: {
-      newRandomTemp() {
-        this.temperature = getRandomTemperature()
-      },
       submitTemperature() {
+        this.status = "Submitting..."
         fetch("https://temperature.chatbox2.ml/api/add", {
           method: "POST",
           credentials: "include",
@@ -45,7 +63,7 @@
             try {
               const data = JSON.parse(a)
               console.log(data)
-              this.status = "Submitted"
+              this.status = `Submitted ${dateutils.displayDate(new Date(data.temperatureResponse.timestamp))}`
             } catch (e) {
               this.status = "Errored: " + a
             }
@@ -54,3 +72,6 @@
     }
   }
 </script>
+
+
+
