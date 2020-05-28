@@ -122,7 +122,6 @@
         if (!code || !code.includes(".") || code.match(/\./g).length !== 2) return
         const [, claimsString,] = code.split(".")
         const claims = JSON.parse(atob(claimsString))
-        console.log(claims)
         this.user = {
           name: claims.name,
           email: claims.unique_name
