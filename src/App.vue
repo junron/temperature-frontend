@@ -10,7 +10,7 @@
                         Welcome, {{ user.name }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ user.email.startsWith("h1") ? "Student" : "Teacher" }}
+                        {{ user.email.endsWith("@nushigh.edu.sg") ? "Student" : "Teacher" }}
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
@@ -83,27 +83,29 @@
         name: "",
         email: ""
       },
-      routes: [
-        {
-          name: "Submit temperature",
-          route: "/",
-          icon: "mdi-thermometer"
-        },
-        {
-          name: "Submissions",
-          route: "/submissions",
-          icon: "mdi-history"
-        },
-        {
-          name: "Admin",
-          route: "/admin",
-          icon: "mdi-chart-donut"
-        }
-
-      ],
       drawerShown: false
     }),
-
+    computed: {
+      routes: function () {
+        return [
+          {
+            name: "Submit temperature",
+            route: "/",
+            icon: "mdi-thermometer"
+          },
+          {
+            name: "Submissions",
+            route: "/submissions",
+            icon: "mdi-history"
+          },
+          (location.search.includes("debug") || this.user.email.endsWith("@nus.edu.sg")) && {
+            name: "Admin",
+            route: "/admin",
+            icon: "mdi-chart-donut"
+          }
+        ].filter(a => !!a)
+      }
+    },
     methods: {
       signIn() {
         location.href = `https://login.microsoftonline.com/d72a7172-d5f8-4889-9a85-d7424751592a/oauth2/authorize?client_id=${clientId}&redirect_uri=${location.origin}&response_type=id_token&nonce=${Math.random() * 1000}`
