@@ -190,6 +190,7 @@
       listenToday() {
         const websocket = new WebSocket("wss://temperature.chatbox2.ml/api/temperatures/today/watch")
         websocket.onmessage = data => {
+          if (data.data.includes("keepalive")) return
           try {
             this.todayData = JSON.parse(data.data).map(item => {
               return {
