@@ -131,7 +131,8 @@
           const expiry = new Date()
           expiry.setTime(expiry.getTime() + 30 * 24 * 60 * 60 * 1000)
           document.cookie = `token=${code};expires=${expiry.toUTCString()}`
-          this.$router.push("/")
+          if (this.$route.path !== "/")
+            this.$router.push("/")
         }
       }
     },

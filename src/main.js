@@ -3,6 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify';
 import router from './plugins/router';
 import AsyncComputed from 'vue-async-computed'
+import './plugins/sentry';
 
 Vue.use(AsyncComputed)
 
