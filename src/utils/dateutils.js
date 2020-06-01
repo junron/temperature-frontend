@@ -21,5 +21,9 @@ export default {
     })
     const [{value: mo}, , {value: da}, , {value: year}, , {value: hour}, , {value: minute}] = dtf.formatToParts(date)
     return `${year}-${mo}-${da} ${hour}:${minute}`
+  },
+  parseDateLocalTime(dateString) {
+    const parts = dateString.split(/[^0-9]/)
+    return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5])
   }
 }

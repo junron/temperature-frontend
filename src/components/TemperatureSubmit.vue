@@ -63,7 +63,7 @@
             try {
               const data = JSON.parse(a)
               console.log(data)
-              this.status = `Submitted ${dateutils.displayDate(new Date(data.temperatureResponse.timestamp))}`
+              this.status = `Submitted ${dateutils.displayDate(dateutils.parseDateLocalTime(data.temperatureResponse.timestamp))}`
             } catch (e) {
               this.status = "Errored: " + a
             }

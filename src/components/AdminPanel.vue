@@ -63,7 +63,8 @@
                     </v-chip>
                 </template>
                 <template v-slot:item.timestamp="{ item }">
-                    {{ item.timestamp == null ? "-" : dateutils.displayDate(new Date(item.timestamp)) }}
+                    {{ item.timestamp == null ? "-" :
+                    dateutils.displayDate(dateutils.parseDateLocalTime(item.timestamp)) }}
                 </template>
             </v-data-table>
         </v-card>
@@ -105,7 +106,7 @@
         const today = new Date().toDateString()
         filtered = filtered.filter(a => {
           if (this.todayOnly && this.todayData == null) {
-            const date = new Date(a.timestamp)
+            const date = dateutils.parseDateLocalTime(a.timestamp)
             if (date.toDateString() !== today) return false
           }
           if (this.selectedMentorGroup !== "All") {
@@ -209,7 +210,7 @@
       downloadCSV() {
         let output = "data:text/csv;charset=utf-8,Timestamp,Class,Name,Temperature\n"
         for (const item of this.filteredData) {
-          const timestamp = item.timestamp == null ? "-" : dateutils.displayDate(new Date(item.timestamp))
+          const timestamp = item.timestamp == null ? "-" : dateutils.displayDate(dateutils.parseDateLocalTime(item.timestamp))
           const temperature = item.temperature == null ? "Not submitted" : item.temperature
           output += `${timestamp},${item.mentorGroup},"${item.name}",${temperature}\n`
         }

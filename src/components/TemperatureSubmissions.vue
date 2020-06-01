@@ -68,7 +68,7 @@
                 return this.fetchedData.map(a => {
                     return {
                       name: a.temperature.toString(),
-                      start: dateutils.formatDate(new Date(a.timestamp)),
+                      start: dateutils.formatDate(dateutils.parseDateLocalTime(a.timestamp)),
                     }
                 })
             },
@@ -100,6 +100,7 @@
                     })
             },
             getColor(event) {
+              console.log(event.start)
                 let timestamp = new Date(event.start)
                 const dtf = new Intl.DateTimeFormat('en', {
                     month: 'short',
